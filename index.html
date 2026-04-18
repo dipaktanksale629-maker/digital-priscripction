@@ -3,63 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional Digital Pad</title>
+    <title>Dr. Abhay's Digital Pad</title>
     <style>
-        body { font-family: 'Arial', sans-serif; margin: 0; padding: 10px; background: #f0f2f5; }
-        .prescription-card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
-        .header { text-align: center; color: #007bff; border-bottom: 2px solid #eee; margin-bottom: 15px; }
-        
-        /* Input Fields - पेनने क्लिक केल्यावर कीबोर्ड/व्हॉइस उघडेल */
-        .input-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
-        input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; outline: none; }
-        input:focus { border-color: #007bff; }
-
-        .canvas-header { font-weight: bold; margin-bottom: 5px; color: #555; display: flex; justify-content: space-between; }
-        
-        #canvas-container { background: #fff; border: 2px solid #007bff; border-radius: 10px; position: relative; }
-        canvas { width: 100%; height: 350px; touch-action: none; }
-        
-        .footer-btns { display: flex; gap: 10px; margin-top: 15px; }
-        button { flex: 1; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
-        .btn-clear { background: #ff4757; color: white; }
-        .btn-save { background: #2ed573; color: white; }
+        body { font-family: 'Arial', sans-serif; background: #f4f4f4; padding: 10px; }
+        .pad { background: white; max-width: 500px; margin: auto; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .header { text-align: center; border-bottom: 2px solid #007bff; color: #007bff; margin-bottom: 10px; }
+        .input-row { margin-bottom: 10px; display: flex; gap: 10px; }
+        input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; }
+        canvas { border: 2px solid #333; background: #fafafa; cursor: crosshair; touch-action: none; width: 100%; height: 300px; }
+        .btns { display: flex; gap: 10px; margin-top: 10px; }
+        button { flex: 1; padding: 15px; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; }
+        .btn-clear { background: #e74c3c; }
+        .btn-save { background: #2ecc71; }
     </style>
 </head>
 <body>
 
-<div class="prescription-card">
+<div class="pad">
     <div class="header">
-        <h2>DR. ABHAY'S DIGITAL PAD</h2>
+        <h2>DR. ABHAY SINGH</h2>
+        <p>Reg No: 12345 | Satara</p>
     </div>
 
-    <div class="input-group">
-        <input type="text" id="name" placeholder="रुग्णाचे नाव (Patient Name)">
-        <input type="text" id="vitals" placeholder="BP / Pulse / Wt">
+    <div class="input-row">
+        <input type="text" placeholder="रुग्णाचे नाव (Name)">
+        <input type="text" style="width: 80px;" placeholder="वय (Age)">
+    </div>
+    <div class="input-row">
+        <input type="text" placeholder="Vitals (BP, Sugar, Pulse)">
     </div>
 
-    <div class="canvas-header">
-        <span>Rx (Handwritten Medicines):</span>
-        <span id="eraser-status" style="color:red; font-size:12px; display:none;">Eraser ON</span>
-    </div>
+    <p><strong>Rx (औषधे खाली लिहा):</strong></p>
+    <canvas id="canvas"></canvas>
 
-    <div id="canvas-container">
-        <canvas id="paintCanvas"></canvas>
-    </div>
-
-    <div class="footer-btns">
-        <button class="btn-clear" onclick="clearAll()">Clear</button>
-        <button class="btn-save" onclick="generatePDF()">Save PDF</button>
+    <div class="btns">
+        <button class="btn-clear" onclick="clearCanvas()">Clear</button>
+        <button class="btn-save" onclick="window.print()">Save PDF</button>
     </div>
 </div>
 
 <script>
-    const canvas = document.getElementById('paintCanvas');
+    const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     let drawing = false;
 
-    // Resize canvas
     canvas.width = canvas.offsetWidth;
-    canvas.height = 350;
+    canvas.height = 300;
 
     function getPos(e) {
         const rect = canvas.getBoundingClientRect();
@@ -78,7 +67,6 @@
         ctx.lineWidth = 3;
         ctx.lineCap = 'round';
         ctx.strokeStyle = '#000';
-
         ctx.lineTo(pos.x, pos.y);
         ctx.stroke();
         ctx.beginPath();
@@ -92,16 +80,8 @@
     canvas.addEventListener('touchmove', draw);
     canvas.addEventListener('touchend', stop);
 
-    function clearAll() {
-        if(confirm("पूर्ण पेज पुसायचे आहे का?")) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            document.getElementById('name').value = "";
-            document.getElementById('vitals').value = "";
-        }
-    }
-
-    function generatePDF() {
-        window.print();
+    function clearCanvas() {
+        if(confirm("सगळे पुसायचे आहे का?")) ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 </script>
 
