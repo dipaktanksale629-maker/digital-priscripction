@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Digital Prescription</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .prescription-box { width: 100%; max-width: 600px; background: white; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 10px; }
+        .header { text-align: center; border-bottom: 2px solid #007bff; padding-bottom: 10px; color: #007bff; }
+        .patient-info { background: #eefbff; padding: 15px; margin: 15px 0; border-radius: 5px; font-size: 16px; line-height: 1.6; }
+        .canvas-container { position: relative; border: 2px dashed #ccc; background: #fff; margin-bottom: 20px; }
+        canvas { cursor: crosshair; touch-action: none; width: 100%; }
+        .controls { display: flex; gap: 10px; width: 100%; max-width: 600px; }
+        button { flex: 1; padding: 12px; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; transition: 0.3s; }
+        .btn-clear { background: #ff4d4d; color: white; }
+        .btn-save { background: #28a745; color: white; }
+        .btn-eraser { background: #6c757d; color: white; }
+        .active-eraser { border: 3px solid black; }
+    </style>
+</head>
+<body>
+
+<div class="prescription-box">
+    <div class="header">
+        <h1>DR. ABHAY'S CLINIC</h1>
+        <p>Digital Prescription System</p>
+    </div>
+
+    <div class="patient-info" id="type-area">
+        <strong>Patient Name:</strong> <span id="pNameDisplay">__________</span><br>
+        <strong>Vitals:</strong> <span id="pVitalsDisplay">BP: --, Sugar: --, Pulse: --</span><br>
+        <hr>
+        <strong>Rx (Medicines):</strong>
+        <div id="pMedsDisplay" style="font-style: italic; color: #555;">(औषधे खाली लिहायला सुरुवात करा...)</div>
+    </div>
+
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+    </div>
+</div>
+
+<div class="controls">
+    <button class="btn-eraser" id="eraserBtn">Eraser: OFF</button>
+    <button class="btn-clear" onclick="clearAll()">Clear All</button>
+    <button class="btn-save" onclick="savePDF()">Save as PDF</button>
+</div>
+
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+    let eraser = false;
+    let strokeCount = 0;
+
+    // कॅनव्हासची साईज सेट करणे
+    canvas.width = canvas.parentElement.clientWidth;
+    canvas.height = 400;
+
+    function startDraw(e) { drawing = true; draw(e); }
+    function stopDraw() { drawing = false; ctx.beginPath(); }
+
+    function draw(e) {
+        if (!drawing) return;
+        
+        const rect = canvas.getBoundingClientRect();
+        const x = (e.clientX || e.touches[0].clientX) - rect.left;
+        const y = (e.clientY || e.touches[0].clientY) - rect.top;
+
+        ctx.lineWidth = eraser ? 20 : 3;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = eraser ? 'white' : 'black';
+
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+
+        // Real-time typing simulation
+        strokeCount++;
+        if (strokeCount > 20) document.getElementById('pNameDisplay').innerText = "Abhay Singh";
+        if (strokeCount > 60) document.getElementById('pVitalsDisplay').innerText = "BP: 120/80, Pulse: 72";
+        if (strokeCount > 100) document.getElementById('pMedsDisplay').innerHTML = "1. Tab. Taxim-O (1-0-1)<br>2. Pan-D (1-0-0)";
+    }
+
+    // Event Listeners for Mouse and Touch
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    window.addEventListener('mouseup', stopDraw);
+    canvas.addEventListener('touchstart', startDraw);
+    canvas.addEventListener('touchmove', draw);
+    canvas.addEventListener('touchend', stopDraw);
+
+    // Eraser Logic
+    document.getElementById('eraserBtn').onclick = function() {
+        eraser = !eraser;
+        this.innerText = eraser ? "Eraser: ON" : "Eraser: OFF";
+        this.style.background = eraser ? "#000" : "#6c757d";
+    };
+
+    function clearAll() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        document.getElementById('pNameDisplay').innerText = "__________";
+        document.getElementById('pVitalsDisplay').innerText = "BP: --, Sugar: --, Pulse: --";
+        document.getElementById('pMedsDisplay').innerText = "(औषधे खाली लिहायला सुरुवात करा...)";
+        strokeCount = 0;
+    }
+
+    function savePDF() {
+        window.print(); // ब्राउझरमधून PDF सेव्ह करण्यासाठी
+    }
+</script>
+
+</body>
+</html>
